@@ -1,0 +1,13 @@
+[
+    {
+        "pool_id": 1066,
+        "position_id": 17706,
+        "lower_tick": 100055000,
+        "upper_tick": 105079000,
+        "amount0": "764213355847087954",
+        "amount1": "1000000",
+        "token_min_amount0": "975000",
+        "token_min_amount1": "745108021950910755"
+    }
+]
+

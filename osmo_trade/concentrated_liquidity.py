@@ -1,27 +1,36 @@
 import csv
 import requests
 from mospy import Account, Transaction
+#mospy.Account.protobuf = 'osmo'
 from mospy.clients import HTTPClient
-from cosmospy_protobuf.cosmos.base.v1beta1.coin_pb2 import Coin
+#from cosmospy_protobuf.cosmos.base.v1beta1.coin_pb2 import Coin
 import pandas as pd
 import os
-from tx_pb2 import MsgCreatePosition, MsgWithdrawPosition, MsgAddToPosition
+from .tx_pb4 import MsgCreatePosition, MsgWithdrawPosition, MsgAddToPosition
 import json
+import requests
+
+
 rpc_endpoint = "https://cosmos-lcd.easy2stake.com"
 rest_endpoint = "https://api.osl.zone"
 
-with open("private_info.json", "r") as file:
-    data = json.load(file)
+def query_user_position(address, pool_id=None):
+    endpoint = f"{rest_endpoint}/osmosis/concentratedliquidity/v1beta1/positions/{address}"
+    if pool_id:
+        endpoint += f"?pool_id={pool_id}"
 
-mnemonic_key = data["mnemonic_key"]
-cosmos_address = data["cosmos_address"]
-stride_address = data["stride_address"]
-
-print(mnemonic_key)
-print(cosmos_address)
-print(stride_address)
-
-import requests
+    try:
+        response = requests.get(endpoint)
+        if response.status_code == 200:
+            user_positions_data = response.json()
+            print(user_positions_data)
+            return user_positions_data
+        else:
+            print(f"Error: {response.status_code} - {response.reason}")
+            return None
+    except Exception as ex:
+        print(f"An error occurred: {ex}")
+        return None
 
 
 def read_input_json(file_path):
@@ -45,21 +54,6 @@ def get_pools():
     except Exception as ex:
         print(f"An error occurred: {ex}")
         return None
-
-pools = get_pools()
-
-keys = ["token0", "token1", "current_tick"]
-
-pool_info = {}
-
-for pool in pools['pools']:
-    pool_id = int(pool["id"])
-    temp_dict = {}  # Create an empty dictionary for each pool
-    for key in keys:
-        temp_dict[key] = pool[key]  # Populate the dictionary with key-value pairs from the pool
-    pool_info[pool_id] = temp_dict  # Use pool ID as the key and the populated dictionary as its value
-
-print(pool_info)
 
 
 
@@ -103,7 +97,8 @@ def create_position_transaction(account, pool_id, sender_address, lower_tick, up
     tx = Transaction(
         account=account,
         chain_id="osmosis-1",
-        gas=3000000
+        gas=3000000,
+        protobuf='osmosis'
     )
     tx.set_fee(
         amount=75000,
@@ -123,7 +118,8 @@ def withdraw_position_transaction(account, position_id, sender_address, liquidit
     tx = Transaction(
         account=account,
         chain_id="osmosis-1",
-        gas=3000000
+        gas=3000000,
+        protobuf='osmosis'
     )
     tx.set_fee(
         amount=75000,
@@ -146,7 +142,8 @@ def add_to_position_transaction(account, amount0, amount1, position_id, sender_a
     tx = Transaction(
         account=account,
         chain_id="osmosis-1",
-        gas=3000000
+        gas=3000000,
+        protobuf='osmosis'
     )
     tx.set_fee(
         amount=75000,
@@ -156,57 +153,3 @@ def add_to_position_transaction(account, amount0, amount1, position_id, sender_a
 
     return tx
 
-def createPositionInRange(percent_range):
-    # Load necessary data and setup
-    print("at start")
-   
-
-    account_number, sequence = fetch_account_data(stride_address)
-    input_data = read_input_json("input_data.json")
-
-    print(account_number,sequence)
-    if account_number is not None and sequence is not None:
-        account = Account(
-            seed_phrase=mnemonic_key,
-            account_number=account_number,
-            next_sequence=sequence,
-            hrp="osmo"
-    )
-        for data in input_data:
-            pool_id = int(data['pool_id'])
-            position_id = int(data['position_id'])
-            current_tick = int(pool_info[pool_id]['current_tick'])
-            lower_tick = int( current_tick - current_tick*percent_range/100)
-            upper_tick = int(current_tick + current_tick*percent_range/100)
-            print(lower_tick,upper_tick)
-            amount0 = data['amount0']
-            amount1 = data['amount1']
-            token_min_amount0 = data['token_min_amount0']
-            token_min_amount1 = data['token_min_amount1']
-            
-            create_position_tx = create_position_transaction(
-                account,
-                pool_id=pool_id,
-                sender_address=stride_address,
-                lower_tick=lower_tick,
-                upper_tick=upper_tick,
-                tokens_provided=[
-                    {
-                        "amount": amount0,
-                        "denom": pool_info[pool_id]['token1']
-                    },
-                    {
-                        "amount": amount1,
-                        "denom": pool_info[pool_id]['token0']
-                    }
-                ],
-                token_min_amount0=token_min_amount0,
-                token_min_amount1=token_min_amount1
-            )
-        client = HTTPClient(api=rest_endpoint)
-        create_position_result = client.broadcast_transaction(transaction=create_position_tx)
-        print("Create Position Result:", create_position_result)
-
-if __name__ == "__main__":
-    percent_range = 1
-    createPositionInRange(percent_range)

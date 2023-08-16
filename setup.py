@@ -5,13 +5,13 @@ with open("README.md", "r") as f:
 
 setup(
     name='osmo_trade',
-    version='0.1.1',
+    version='0.1.2',
     description='SDK to trade on osmosis DEX',
-    url='https://github.com/0xmercury/osmo_trade',
+    url='https://github.com/ahatkar/osmo_trade/',
     long_description= readme,
     long_description_content_type="text/markdown",
-    author='0xmercury',
-    author_email='osmocosmo2@gmail.com',
+    author='ahatkar',
+    author_email='hatkar.akshay@@gmail.com',
     license='Apache License 2.0',
     packages=['osmo_trade', 'osmo_trade._pools'],
     package_data = {
@@ -25,6 +25,6 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     project_urls={
-        "Source": "https://github.com/0xmercury/osmo_trade",
+        "Source": "https://github.com/ahatkar/osmo_trade/",
     }
 )
