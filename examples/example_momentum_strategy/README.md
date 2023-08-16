@@ -3,7 +3,7 @@
 
 ### Overview:
 
-This script aims to automate certain operations related to the Osmosis blockchain CL, such as:
+This script aims to automate certain operations related to the Osmosis  CL, such as:
 
 1. Fetching pool data.
 2. Retrieving account details.
