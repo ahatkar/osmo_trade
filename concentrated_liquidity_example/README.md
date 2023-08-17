@@ -77,5 +77,6 @@ Requirements
   A private_info.json file containing your mnemonic key, cosmos address, and stride address.
   An input_data.json file containing information about your desired liquidity positions.
 
-
+Note: refere to below README.md file for tick and amount calculations
+https://github.com/osmosis-labs/osmosis/tree/main/x/concentrated-liquidity
 
