@@ -70,8 +70,6 @@ def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_t
 		print("Create Position Result:", create_position_result)
 def hourly_check_and_update_position(stride_address, percent_range):
 	while True:
-	
-		print(account_number,sequence)
 		for data in input_data:
 			pool_id = data["pool_id"]
 			current_tick = int(pool_info[pool_id]['current_tick'])
