@@ -13,6 +13,7 @@ print(mnemonic_key)
 print(cosmos_address)
 print(stride_address)
 
+
 pools = get_pools()
 
 keys = ["token0", "token1", "current_tick"]
@@ -29,7 +30,22 @@ for pool in pools['pools']:
 print(pool_info)
 
 
-def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1,account):
+def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1):
+
+		account_number, sequence = fetch_account_data(stride_address)
+		amount0 = str(int(int(amount0)*int(1e18)))
+		amount1 = str(int(int(amount1)*int(1e18)))
+		token_min_amount0 = str(int(int(token_min_amount0)*int(1e18)))
+		token_min_amount1 = str(int(int(token_min_amount1)*int(1e18)))
+		print(amount1,amount0,token_min_amount1,token_min_amount0)
+		account = Account(
+				seed_phrase=mnemonic_key,
+				account_number=account_number,
+				next_sequence=sequence,
+				hrp="osmo",
+				protobuf='osmosis'
+		)
+		print(account_number,sequence)
 		create_position_tx = create_position_transaction(
 				account,
 				pool_id=pool_id,
@@ -54,15 +70,8 @@ def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_t
 		print("Create Position Result:", create_position_result)
 def hourly_check_and_update_position(stride_address, percent_range):
 	while True:
-		account_number, sequence = fetch_account_data(stride_address)
-
-		account = Account(
-				seed_phrase=mnemonic_key,
-				account_number=account_number,
-				next_sequence=sequence,
-				hrp="osmo",
-				protobuf='osmosis'
-		)
+	
+		print(account_number,sequence)
 		for data in input_data:
 			pool_id = data["pool_id"]
 			current_tick = int(pool_info[pool_id]['current_tick'])
@@ -78,20 +87,43 @@ def hourly_check_and_update_position(stride_address, percent_range):
 				current_tick = int(pool_info[int(position['position']['pool_id'])]['current_tick'])
 				lower_tick = int(current_tick - current_tick * percent_range / 100)
 				upper_tick = int(current_tick + current_tick * percent_range / 100)
-				
+
+				lower_tick = lower_tick - lower_tick%100
+				upper_tick = upper_tick - upper_tick%100
+				from decimal import Decimal
 				print(current_tick,lower_tick,upper_tick)
 				# 2. Check if the position's ticks are out of range
 				if  current_tick < int(position['position']['lower_tick'])  or  current_tick > int(position['position']['upper_tick']) :
-					value = str(position["position"]["liquidity"]).split(".")[0]
-					liquidity = (value)
+					value = float(position["position"]["liquidity_amount"])*float(1e18)
+					value = int(value)
 					print(value)
+					liquidity = str(value)
+					print(liquidity)
+					account_number, sequence = fetch_account_data(stride_address)
+
+					account = Account(
+							seed_phrase=mnemonic_key,
+							account_number=account_number,
+							next_sequence=sequence,
+							hrp="osmo",
+							protobuf='osmosis'
+					)
 					withdraw = withdraw_position_transaction(account,int(position['position']['position_id']),stride_address,liquidity)
 					client = HTTPClient(api=rest_endpoint)
 					withdraw_result = client.broadcast_transaction(transaction=withdraw)
 					print(withdraw_result)
-					# 4. Create a new position with updated ticks
-				    createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1,account)
+					# need to sleep beofre sending another transaction
+					time.sleep(5)
+					createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
 			if len(user_positions["positions"]) < 1:
+				account_number, sequence = fetch_account_data(stride_address)
+				account = Account(
+						seed_phrase=mnemonic_key,
+						account_number=account_number,
+						next_sequence=sequence,
+						hrp="osmo",
+						protobuf='osmosis'
+				)
 				createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1,account)
 
 		time.sleep(3600)

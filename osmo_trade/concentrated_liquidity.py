@@ -112,7 +112,7 @@ def withdraw_position_transaction(account, position_id, sender_address, liquidit
     ibc_msg = MsgWithdrawPosition(
         position_id=position_id,
         sender=sender_address,
-        liquidity_amount=str(liquidity_amount)
+        liquidity_amount=(liquidity_amount)
     )
 
     tx = Transaction(
