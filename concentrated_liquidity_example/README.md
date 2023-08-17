@@ -11,7 +11,7 @@ This script aims to automate certain operations related to the Osmosis blockchai
 
 ### Prerequisites:
 
-- Required libraries: `requests`, `mospy`, `pandas`, `json`, `cosmospy_protobuf`, and `tx_pb2`.
+- Required libraries: `requests`, `mospy`, `pandas`, `json`, `cosmospy_protobuf`
   
   Install these using pip:
 
@@ -39,7 +39,7 @@ This script aims to automate certain operations related to the Osmosis blockchai
 This JSON file contains an array of position data that the script uses to create, withdraw, or add to positions. Each object in the array represents a position and has the following properties:
 
 - `pool_id`: The ID of the pool.
-- `position_id`: The ID of the position.
+- `position_id`: The ID of the position. (this is optional , in case query postion doesn't work you can use this)
 - `lower_tick`: The lower tick value.
 - `upper_tick`: The upper tick value.
 - `amount0`: Amount of the first token.
@@ -64,41 +64,18 @@ Example:
 ]
 ```
 
-Ensure that this file is present in the same directory as the script before executing.
+Concentrated Liquidity Strategy (cl_strat.py)
 
+This script provides an automated strategy for managing concentrated liquidity positions on the Osmosis platform.
 
-### Execution:
-
-Run the script using:
-
-```bash
-python concentrated_liquidity.py
-```
-
-Replace `concentrated_liquidity.py` with the name you've saved the script as.
-
-
-### Functions:
-
-1. `read_input_json(file_path)`: Reads a JSON file from the given file path.
-2. `get_pools()`: Fetches pool data from Osmosis API.
-3. `fetch_account_data(stride_address)`: Fetches the account number and sequence for the given Stride address.
-4. `create_position_transaction(...)`: Constructs a transaction to create a position.
-5. `withdraw_position_transaction(...)`: Constructs a transaction to withdraw from a position.
-6. `add_to_position_transaction(...)`: Constructs a transaction to add to a position.
-
-### Main Logic:
-
-The main logic of the script is encapsulated within the `createPositionInRange(percent_range)` function. This function automates the process of:
-
-- Fetching account data.
-- Reading the input data.
-- Calculating the lower and upper ticks based on the current tick and given percentage range.
-- Creating position transactions and broadcasting them.
-
-### Notes:
-
-1. The script currently has portions related to withdrawing from and adding to positions commented out. To use these functionalities, uncomment the relevant sections and ensure that the necessary data is present in `input_data.json`.
+Overview
+The script performs the following operations:
+  Fetches the current pool data.
+  Checks user's positions hourly.
+  Updates the positions based on the specified percent range. If the current tick is out of the user's range, it withdraws the position and creates a new one.
+Requirements
+  A private_info.json file containing your mnemonic key, cosmos address, and stride address.
+  An input_data.json file containing information about your desired liquidity positions.
 
 
 
