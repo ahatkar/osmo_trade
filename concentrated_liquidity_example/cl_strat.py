@@ -31,12 +31,12 @@ print(pool_info)
 
 
 def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1):
-
+     
 		account_number, sequence = fetch_account_data(stride_address)
-		amount0 = str(int(int(amount0)*int(1e18)))
-		amount1 = str(int(int(amount1)*int(1e18)))
-		token_min_amount0 = str(int(int(token_min_amount0)*int(1e18)))
-		token_min_amount1 = str(int(int(token_min_amount1)*int(1e18)))
+		amount0 = str(int(int(amount0)*int(1e0)))
+		amount1 = str(int(int(amount1)*int(1e0)))
+		token_min_amount0 = str(int(int(token_min_amount0)*int(1e0)))
+		token_min_amount1 = str(int(int(token_min_amount1)*int(1e0)))
 		print(amount1,amount0,token_min_amount1,token_min_amount0)
 		account = Account(
 				seed_phrase=mnemonic_key,
@@ -54,11 +54,11 @@ def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_t
 				upper_tick=upper_tick,
 				tokens_provided=[
 					{
-						"amount": amount0,
+						"amount": amount1,
 						"denom": pool_info[pool_id]['token1']
 					},
 					{
-						"amount": amount1,
+						"amount": amount0,
 						"denom": pool_info[pool_id]['token0']
 					}
 				],
@@ -112,7 +112,7 @@ def hourly_check_and_update_position(stride_address, percent_range):
 					print(withdraw_result)
 					# need to sleep beofre sending another transaction
 					time.sleep(5)
-					createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
+				    createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
 			if len(user_positions["positions"]) < 1:
 				account_number, sequence = fetch_account_data(stride_address)
 				account = Account(
@@ -122,7 +122,7 @@ def hourly_check_and_update_position(stride_address, percent_range):
 						hrp="osmo",
 						protobuf='osmosis'
 				)
-				createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1,account)
+				createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
 
 		time.sleep(3600)
 
