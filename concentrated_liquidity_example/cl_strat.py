@@ -1,4 +1,4 @@
-from osmo_trade.concentrated_liquidity import get_pools,fetch_account_data,read_input_json,create_position_transaction,Account,HTTPClient,rest_endpoint,withdraw_position_transaction,query_user_position
+from osmo_trade.concentrated_liquidity import get_pools,fetch_account_data,read_input_json,create_position_transaction,Account,HTTPClient,rest_endpoint,withdraw_position_transaction,query_user_position,add_to_position_transaction
 import json
 import time
 import math

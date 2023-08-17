@@ -80,3 +80,55 @@ Requirements
 Note: refere to below README.md file for tick and amount calculations
 https://github.com/osmosis-labs/osmosis/tree/main/x/concentrated-liquidity
 
+
+
+Another function you can use:
+
+
+## Add to Position Transaction Function
+
+### Overview
+
+The `add_to_position_transaction` function allows users to increase their stake in a specific liquidity position on the Osmosis platform. By using this function, you can add more tokens to your existing position.
+
+### Function Parameters
+
+- `account`: An `Account` object that contains the user's account details.
+- `amount0`: The amount of the first token you want to add.
+- `amount1`: The amount of the second token you want to add.
+- `position_id`: The ID of the liquidity position you want to add to.
+- `sender_address`: The address of the user sending the tokens.
+- `token_min_amount0`: The minimum amount of the first token that must be added for the transaction to be valid.
+- `token_min_amount1`: The minimum amount of the second token that must be added for the transaction to be valid.
+
+### How to use
+
+1. Ensure you have initialized an `Account` object with your account details.
+2. Call the function with the desired parameters:
+
+```python
+account = Account(
+    seed_phrase="your_mnemonic_key",
+    account_number="your_account_number",
+    next_sequence="your_next_sequence",
+    hrp="osmo",
+    protobuf='osmosis'
+)
+
+tx = add_to_position_transaction(
+    account=account,
+    amount0="desired_amount0",
+    amount1="desired_amount1",
+    position_id="your_position_id",
+    sender_address="your_sender_address",
+    token_min_amount0="minimum_required_amount0",
+    token_min_amount1="minimum_required_amount1"
+)
+```
+
+3. Broadcast the returned transaction to the network to execute the operation.
+
+### Note
+
+- Ensure you set the correct `amount0`, `amount1`, and minimum amounts for the transaction to be valid.
+- Ensure you have sufficient funds in your account to add to the position and cover the transaction fee.
