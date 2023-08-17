@@ -33,10 +33,10 @@ print(pool_info)
 def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1):
      
 		account_number, sequence = fetch_account_data(stride_address)
-		amount0 = str(int(int(amount0)*int(1e0)))
-		amount1 = str(int(int(amount1)*int(1e0)))
-		token_min_amount0 = str(int(int(token_min_amount0)*int(1e0)))
-		token_min_amount1 = str(int(int(token_min_amount1)*int(1e0)))
+		amount0 = str(int(amount0))
+		amount1 = str(int(amount1))
+		token_min_amount0 = str(int(token_min_amount0))
+		token_min_amount1 = str(int(token_min_amount1))
 		print(amount1,amount0,token_min_amount1,token_min_amount0)
 		account = Account(
 				seed_phrase=mnemonic_key,
