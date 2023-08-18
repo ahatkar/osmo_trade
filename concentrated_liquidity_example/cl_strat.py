@@ -29,7 +29,7 @@ print(pool_info)
 
 
 def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1):
-     
+	 
 		account_number, sequence = fetch_account_data(osmo_address)
 		amount0 = str(int(amount0))
 		amount1 = str(int(amount1))
@@ -110,7 +110,7 @@ def hourly_check_and_update_position(osmo_address, percent_range):
 					print(withdraw_result)
 					# need to sleep beofre sending another transaction
 					time.sleep(5)
-				    createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
+					createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
 			if len(user_positions["positions"]) < 1:
 				account_number, sequence = fetch_account_data(osmo_address)
 				account = Account(
