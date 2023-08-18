@@ -90,11 +90,12 @@ def hourly_check_and_update_position(osmo_address, percent_range):
 				print(current_tick,lower_tick,upper_tick)
 				# 2. Check if the position's ticks are out of range
 				if  current_tick < int(position['position']['lower_tick'])  or  current_tick > int(position['position']['upper_tick']) :
-					value = float(position["position"]["liquidity_amount"])*float(1e18)
+					value = float(position["position"]["liquidity"])*float(1e18)
 					value = int(value)
 					print(value)
 					liquidity = str(value)
 					print(liquidity)
+					time.sleep(10)
 					account_number, sequence = fetch_account_data(osmo_address)
 
 					account = Account(
@@ -109,9 +110,10 @@ def hourly_check_and_update_position(osmo_address, percent_range):
 					withdraw_result = client.broadcast_transaction(transaction=withdraw)
 					print(withdraw_result)
 					# need to sleep beofre sending another transaction
-					time.sleep(5)
+					time.sleep(10)
 					createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
 			if len(user_positions["positions"]) < 1:
+				time.sleep(10)
 				account_number, sequence = fetch_account_data(osmo_address)
 				account = Account(
 						seed_phrase=mnemonic_key,
