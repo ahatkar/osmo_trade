@@ -6,12 +6,10 @@ with open("private_info.json", "r") as file:
 	data = json.load(file)
 
 mnemonic_key = data["mnemonic_key"]
-cosmos_address = data["cosmos_address"]
-stride_address = data["stride_address"]
+osmo_address = data["osmo_address"]
 
 print(mnemonic_key)
-print(cosmos_address)
-print(stride_address)
+print(osmo_address)
 
 
 pools = get_pools()
@@ -32,7 +30,7 @@ print(pool_info)
 
 def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1):
      
-		account_number, sequence = fetch_account_data(stride_address)
+		account_number, sequence = fetch_account_data(osmo_address)
 		amount0 = str(int(amount0))
 		amount1 = str(int(amount1))
 		token_min_amount0 = str(int(token_min_amount0))
@@ -49,7 +47,7 @@ def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_t
 		create_position_tx = create_position_transaction(
 				account,
 				pool_id=pool_id,
-				sender_address=stride_address,
+				sender_address=osmo_address,
 				lower_tick=lower_tick,
 				upper_tick=upper_tick,
 				tokens_provided=[
@@ -68,7 +66,7 @@ def createPositionInRange(ppercent_range,pool_id,current_tick,lower_tick,upper_t
 		client = HTTPClient(api=rest_endpoint)
 		create_position_result = client.broadcast_transaction(transaction=create_position_tx)
 		print("Create Position Result:", create_position_result)
-def hourly_check_and_update_position(stride_address, percent_range):
+def hourly_check_and_update_position(osmo_address, percent_range):
 	while True:
 		for data in input_data:
 			pool_id = data["pool_id"]
@@ -80,7 +78,7 @@ def hourly_check_and_update_position(stride_address, percent_range):
 			amount1 = data['amount1']
 			token_min_amount0 = data['token_min_amount0']
 			token_min_amount1 = data['token_min_amount1']
-			user_positions = query_user_position(stride_address,pool_id)
+			user_positions = query_user_position(osmo_address,pool_id)
 			for position in user_positions['positions']:
 				current_tick = int(pool_info[int(position['position']['pool_id'])]['current_tick'])
 				lower_tick = int(current_tick - current_tick * percent_range / 100)
@@ -97,7 +95,7 @@ def hourly_check_and_update_position(stride_address, percent_range):
 					print(value)
 					liquidity = str(value)
 					print(liquidity)
-					account_number, sequence = fetch_account_data(stride_address)
+					account_number, sequence = fetch_account_data(osmo_address)
 
 					account = Account(
 							seed_phrase=mnemonic_key,
@@ -106,7 +104,7 @@ def hourly_check_and_update_position(stride_address, percent_range):
 							hrp="osmo",
 							protobuf='osmosis'
 					)
-					withdraw = withdraw_position_transaction(account,int(position['position']['position_id']),stride_address,liquidity)
+					withdraw = withdraw_position_transaction(account,int(position['position']['position_id']),osmo_address,liquidity)
 					client = HTTPClient(api=rest_endpoint)
 					withdraw_result = client.broadcast_transaction(transaction=withdraw)
 					print(withdraw_result)
@@ -114,7 +112,7 @@ def hourly_check_and_update_position(stride_address, percent_range):
 					time.sleep(5)
 				    createPositionInRange(percent_range,pool_id,current_tick,lower_tick,upper_tick,amount0,amount1,token_min_amount0,token_min_amount1)
 			if len(user_positions["positions"]) < 1:
-				account_number, sequence = fetch_account_data(stride_address)
+				account_number, sequence = fetch_account_data(osmo_address)
 				account = Account(
 						seed_phrase=mnemonic_key,
 						account_number=account_number,
@@ -129,4 +127,4 @@ def hourly_check_and_update_position(stride_address, percent_range):
 if __name__ == "__main__":
 	percent_range = 1
 	input_data = read_input_json("input_data.json")
-	hourly_check_and_update_position(stride_address, percent_range)
+	hourly_check_and_update_position(osmo_address, percent_range)
